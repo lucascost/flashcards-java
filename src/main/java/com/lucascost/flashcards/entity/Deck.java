@@ -2,6 +2,8 @@ package com.lucascost.flashcards.entity;
 
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
 public class Deck {
     @Id
@@ -11,6 +13,9 @@ public class Deck {
 
     @Column(name = "title", nullable = false, length = 100)
     private String title;
+
+    @OneToMany(mappedBy = "deck", orphanRemoval = true, fetch = FetchType.EAGER)
+    private List<Card> cards;
 
     public Integer getId() {
         return id;
@@ -26,5 +31,13 @@ public class Deck {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public List<Card> getCards() {
+        return cards;
+    }
+
+    public void setCards(List<Card> cards) {
+        this.cards = cards;
     }
 }

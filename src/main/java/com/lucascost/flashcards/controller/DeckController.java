@@ -1,7 +1,9 @@
 package com.lucascost.flashcards.controller;
 
 import com.lucascost.flashcards.dto.DeckMinDTO;
+import com.lucascost.flashcards.entity.Card;
 import com.lucascost.flashcards.entity.Deck;
+import com.lucascost.flashcards.service.CardService;
 import com.lucascost.flashcards.service.DeckService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +16,9 @@ import java.util.List;
 public class DeckController {
     @Autowired
     private DeckService deckService;
+
+    @Autowired
+    private CardService cardService;
 
     @GetMapping("")
     public ResponseEntity<List<DeckMinDTO>> listAll(@RequestParam(required = false) String query){
@@ -58,6 +63,32 @@ public class DeckController {
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteDeck(@PathVariable int id){
         if(deckService.deleteDeck(id))
+            return ResponseEntity.noContent().build();
+
+        return ResponseEntity.notFound().build();
+    }
+
+    @PostMapping("/{deckId}/cards")
+    public ResponseEntity<Card> saveCard(@PathVariable int deckId, @RequestBody Card card){
+        Card savedCard = cardService.saveCard(deckId, card);
+        if( savedCard != null)
+            return ResponseEntity.status(201).body(savedCard);
+
+        return ResponseEntity.badRequest().build();
+    }
+
+    @PutMapping("/{deckId}/cards/{cardId}")
+    public ResponseEntity<Card> updateCard(@PathVariable int deckId, @PathVariable int cardId, @RequestBody Card card){
+        Card updatedCard = cardService.updateCard(deckId,cardId,card);
+        if( updatedCard != null)
+            return ResponseEntity.ok().body(updatedCard);
+
+        return ResponseEntity.badRequest().build();
+    }
+
+    @DeleteMapping("/{deckId}/cards/{cardId}")
+    public ResponseEntity<String> deleteCard(@PathVariable int deckId, @PathVariable int cardId){
+        if(cardService.deleteCard(deckId,cardId))
             return ResponseEntity.noContent().build();
 
         return ResponseEntity.notFound().build();
