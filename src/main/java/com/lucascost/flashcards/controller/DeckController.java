@@ -1,10 +1,12 @@
 package com.lucascost.flashcards.controller;
 
 import com.lucascost.flashcards.dto.DeckMinDTO;
+import com.lucascost.flashcards.dto.DeckTagDTO;
 import com.lucascost.flashcards.entity.Card;
 import com.lucascost.flashcards.entity.Deck;
 import com.lucascost.flashcards.service.CardService;
 import com.lucascost.flashcards.service.DeckService;
+import com.lucascost.flashcards.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +21,9 @@ public class DeckController {
 
     @Autowired
     private CardService cardService;
+
+    @Autowired
+    private TagService tagService;
 
     @GetMapping("")
     public ResponseEntity<List<DeckMinDTO>> listAll(@RequestParam(required = false) String query){
@@ -92,5 +97,14 @@ public class DeckController {
             return ResponseEntity.noContent().build();
 
         return ResponseEntity.notFound().build();
+    }
+
+    @PostMapping("/{deckId}/tags")
+    public ResponseEntity<String> addTagToDeck(@PathVariable int deckId, @RequestBody DeckTagDTO deckTagDTO){
+        deckTagDTO.setDeckId(deckId);
+        if (tagService.addTagToDeck(deckTagDTO))
+            return ResponseEntity.ok().build();
+
+        return ResponseEntity.badRequest().build();
     }
 }
