@@ -1,19 +1,25 @@
 package com.lucascost.flashcards.service;
 
+import com.lucascost.flashcards.dto.TagListRequest;
 import com.lucascost.flashcards.entity.Deck;
 import com.lucascost.flashcards.dto.DeckMinDTO;
+import com.lucascost.flashcards.entity.Tag;
 import com.lucascost.flashcards.repository.DeckRepository;
+import com.lucascost.flashcards.repository.TagRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 
 @Service
 public class DeckService {
 
     @Autowired
     private DeckRepository deckRepository;
+
+    @Autowired
+    private TagRepository tagRepository;
 
     public List<DeckMinDTO> listDecks(){
         List<Deck> decks = deckRepository.findAll();
@@ -62,9 +68,15 @@ public class DeckService {
         return false;
     }
 
-    public List<DeckMinDTO> listDecksByTitle(String title) {
-        List<Deck> decks = deckRepository.findAllByTitleContainingIgnoreCase(title);
-        return decks.stream().map(DeckMinDTO::new).toList();
+    public List<DeckMinDTO> listDecksByFilter(String query, List<String> tagNames) {
+        List<Deck> decks = new ArrayList<>();
+
+        decks.addAll(deckRepository.findAllByTitleContainingIgnoreCase(query));
+        decks.addAll(deckRepository.findDecksByTagNames(tagNames));
+
+        Set<Deck> result = new HashSet<>(decks);
+
+        return result.stream().map(DeckMinDTO::new).toList();
     }
 }
 

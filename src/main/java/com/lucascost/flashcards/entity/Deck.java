@@ -1,9 +1,11 @@
 package com.lucascost.flashcards.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 public class Deck {
@@ -24,6 +26,13 @@ public class Deck {
             inverseJoinColumns = @JoinColumn(name = "fk_tag")
     )
     private List<Tag> tags = new ArrayList<>();
+
+    @JsonIgnore
+    public List<String> getTagNames(){
+        return getTags().stream()
+                .map(Tag::getName)
+                .collect(Collectors.toList());
+    }
 
     public Integer getId() {
         return id;

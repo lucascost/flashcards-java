@@ -2,6 +2,7 @@ package com.lucascost.flashcards.controller;
 
 import com.lucascost.flashcards.dto.DeckMinDTO;
 import com.lucascost.flashcards.dto.DeckTagDTO;
+import com.lucascost.flashcards.dto.TagListRequest;
 import com.lucascost.flashcards.entity.Card;
 import com.lucascost.flashcards.entity.Deck;
 import com.lucascost.flashcards.service.CardService;
@@ -26,9 +27,10 @@ public class DeckController {
     private TagService tagService;
 
     @GetMapping("")
-    public ResponseEntity<List<DeckMinDTO>> listAll(@RequestParam(required = false) String query){
-        if(query != null)
-            return ResponseEntity.ok().body(deckService.listDecksByTitle(query));
+    public ResponseEntity<List<DeckMinDTO>> listAll(@RequestParam(required = false) String query, @RequestBody(required = false) TagListRequest tags){
+        if(query != null || tags != null) {
+            return ResponseEntity.ok().body(deckService.listDecksByFilter(query, tags.getTags()));
+        }
 
         return ResponseEntity.ok().body(deckService.listDecks());
     }
